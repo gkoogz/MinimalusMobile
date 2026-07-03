@@ -24,6 +24,7 @@ OUT_DIR = ROOT / "outputs"
 OUT_JSON = OUT_DIR / "minimalus_mobile_replacements_full.json"
 OUT_MD = OUT_DIR / "minimalus_mobile_replacements_full.md"
 OUT_SKIPPED = OUT_DIR / "minimalus_mobile_replacements_skipped.md"
+ALIAS_JSON = ROOT / "tools" / "mobile_texture_aliases.json"
 TMP = ROOT / "build" / "dds_to_tga_tmp"
 
 
@@ -196,9 +197,14 @@ def patch_client_js(replacements: dict) -> None:
 
 
 def add_layer(replacements: dict, rows: list[dict], skipped: list[dict], label: str, altered_dir: Path, unaltered_dir: Path) -> None:
-    altered_files = [
+    all_altered_files = [
         p for p in altered_dir.iterdir()
         if p.is_file() and p.suffix.lower() in (".dds", ".png")
+    ]
+    dds_stems = {p.stem.lower() for p in all_altered_files if p.suffix.lower() == ".dds"}
+    altered_files = [
+        p for p in all_altered_files
+        if p.suffix.lower() == ".dds" or p.stem.lower() not in dds_stems
     ]
     for altered in sorted(altered_files, key=lambda p: p.name.lower()):
         if label == "pc" and altered.name.startswith("AndroidMobile_"):
@@ -239,6 +245,60 @@ def add_layer(replacements: dict, rows: list[dict], skipped: list[dict], label: 
         })
 
 
+def pipeline_path(relative_path: str) -> Path:
+    normalized = relative_path.replace("/", os.sep).replace("\\", os.sep)
+    return PIPELINE / normalized
+
+
+def add_aliases(replacements: dict, rows: list[dict], skipped: list[dict]) -> set[str]:
+    if not ALIAS_JSON.exists():
+        return set()
+    aliases = json.loads(ALIAS_JSON.read_text(encoding="utf-8"))
+    aliased_files: set[str] = set()
+    for alias in aliases:
+        label = alias.get("layer", "mobile-alias")
+        altered = pipeline_path(alias["altered"])
+        unaltered = pipeline_path(alias["unaltered"])
+        aliased_files.add(altered.name)
+        if not altered.exists():
+            skipped.append({
+                "layer": label,
+                "file": alias["altered"],
+                "reason": "missing aliased altered texture",
+            })
+            continue
+        if not unaltered.exists():
+            skipped.append({
+                "layer": label,
+                "file": alias["altered"],
+                "reason": "missing aliased mobile fingerprint source",
+            })
+            continue
+        ow, oh, original_rgba = dds_to_rgba(unaltered)
+        aw, ah, altered_rgba = image_to_rgba(altered)
+        if (ow, oh) != (aw, ah):
+            raise ValueError(f"Dimension mismatch for alias {altered.name}: original {ow}x{oh}, altered {aw}x{ah}")
+        key = f"{ow}x{oh}:{fnv1a(original_rgba)}"
+        existing = replacements.get(key)
+        replacements[key] = {
+            "texmodHash": texture_id(altered.name),
+            "source": label,
+            "file": altered.name,
+            "width": ow,
+            "height": oh,
+            "rgbaBase64": base64.b64encode(altered_rgba).decode("ascii"),
+        }
+        rows.append({
+            "layer": label,
+            "file": f"{altered.name} -> {unaltered.name}",
+            "key": key,
+            "size": f"{ow}x{oh}",
+            "status": "overrode-existing-key" if existing else "added",
+            "previousSource": existing.get("source", "") if isinstance(existing, dict) else "",
+        })
+    return aliased_files
+
+
 def main() -> None:
     if not TEXCONV.exists():
         raise SystemExit(f"texconv not found: {TEXCONV}")
@@ -252,6 +312,11 @@ def main() -> None:
     skipped: list[dict] = []
     add_layer(replacements, rows, skipped, "pc", ALTERED, UNALTERED)
     add_layer(replacements, rows, skipped, "mobile", ALTERED_MOBILE, UNALTERED_MOBILE)
+    aliased_files = add_aliases(replacements, rows, skipped)
+    skipped = [
+        row for row in skipped
+        if not (row["layer"] == "pc" and row["file"] in aliased_files)
+    ]
 
     OUT_JSON.write_text(json.dumps(replacements, indent=2), encoding="utf-8")
     patch_client_js(replacements)
@@ -267,6 +332,7 @@ def main() -> None:
         "",
         "1. PC `Altered` textures",
         "2. Mobile `AlteredMobile` textures",
+        "3. Explicit mobile aliases in `tools/mobile_texture_aliases.json`",
         "",
         "| Layer | Texture | Runtime key | Size | Status |",
         "|---|---|---:|---:|---|",

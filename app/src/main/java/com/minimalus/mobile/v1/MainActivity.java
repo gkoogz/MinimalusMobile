@@ -34,9 +34,9 @@ public class MainActivity extends Activity {
     private static final String PATCH_HOST = "patching.1.arenanetworks.com";
     private static final String PATCH_PREFIX = "/gwpatch";
     private static final String ACCESS_KEY = "2043FE79-F32D-4FD7-8C27-0D47231C4F03";
-    private static final String TAG = "MinimalusV101";
+    private static final String TAG = "MinimalusV102";
     private WebView webView;
-    private String bridgeUserAgent = "MinimalusMobile/1.0.1";
+    private String bridgeUserAgent = "MinimalusMobile/1.0.2";
     private final Map<String, String> webgateCookies = new LinkedHashMap<>();
 
     @Override
@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         WebView.setWebContentsDebuggingEnabled(true);
-        android.util.Log.i(TAG, "Starting Minimalus Mobile 1.0.1");
+        android.util.Log.i(TAG, "Starting Minimalus Mobile 1.0.2");
         webView = new WebView(this);
         configureWebView(webView);
         setContentView(webView);
@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
         settings.setAllowContentAccess(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        bridgeUserAgent = settings.getUserAgentString() + " MinimalusMobile/1.0.1";
+        bridgeUserAgent = settings.getUserAgentString() + " MinimalusMobile/1.0.2";
         settings.setUserAgentString(bridgeUserAgent);
 
         view.addJavascriptInterface(new MinimalusBridge(), "MinimalusNative");
@@ -190,7 +190,7 @@ public class MainActivity extends Activity {
                 connection.setReadTimeout(60000);
                 connection.setRequestProperty("X-Access-Key", ACCESS_KEY);
                 connection.setRequestProperty("Accept-Encoding", "identity");
-                connection.setRequestProperty("User-Agent", "MinimalusMobile/1.0.1");
+                connection.setRequestProperty("User-Agent", "MinimalusMobile/1.0.2");
                 connection.connect();
 
                 int code = connection.getResponseCode();

@@ -1,0 +1,8 @@
+[
+  {
+    "layer": "mobile-alias",
+    "altered": "Altered/GW.EXE_0x6EFCAC11.png",
+    "unaltered": "UnalteredMobile/AndroidMobile_128x64_7909d1f2_tex76149_20260703_163958.dds",
+    "note": "Native Android mapping for the C11 texture. F14 is excluded because the exit-game button is not present on mobile."
+  }
+]

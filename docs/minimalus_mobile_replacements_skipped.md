@@ -4,5 +4,4 @@ These altered files were present but could not be converted into runtime replace
 
 | Layer | Texture | Reason |
 |---|---|---|
-| pc | `GW.EXE_0x6EFCAC11.png` | missing unaltered fingerprint source |
 | pc | `GW.EXE_0xB4854F14.png` | missing unaltered fingerprint source |
