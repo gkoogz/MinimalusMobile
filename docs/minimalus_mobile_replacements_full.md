@@ -1,8 +1,8 @@
 # Minimalus Mobile Replacement Table
 
 Total entries: 131
-PC altered DDS: 121
-Mobile altered DDS: 10
+PC altered textures: 133
+Mobile altered textures: 10
 
 Priority order:
 
@@ -30,11 +30,14 @@ Priority order:
 | pc | `GW.EXE_0x1DB63CB7.dds` | `256x64:ef7f6d0c` | 256x64 | added |
 | pc | `GW.EXE_0x1E412F1C.dds` | `16x16:5c67fc36` | 16x16 | added |
 | pc | `GW.EXE_0x1EFF4E48.dds` | `128x32:7543188d` | 128x32 | added |
+| pc | `GW.EXE_0x1EFF4E48.png` | `128x32:7543188d` | 128x32 | overrode-existing-key |
 | pc | `GW.EXE_0x20B27D7B.dds` | `256x512:8b37c697` | 256x512 | added |
 | pc | `GW.EXE_0x21997386.dds` | `64x64:bf6fe528` | 64x64 | added |
 | pc | `GW.EXE_0x21B3722A.dds` | `32x32:d6865a4c` | 32x32 | added |
+| pc | `GW.EXE_0x21B3722A.png` | `32x32:d6865a4c` | 32x32 | overrode-existing-key |
 | pc | `GW.EXE_0x25DC3519.dds` | `128x64:27889598` | 128x64 | added |
 | pc | `GW.EXE_0x286C49ED.dds` | `128x128:4d1c3f0f` | 128x128 | added |
+| pc | `GW.EXE_0x286C49ED.png` | `128x128:4d1c3f0f` | 128x128 | overrode-existing-key |
 | pc | `GW.EXE_0x2D24304D.dds` | `32x32:aabe65d7` | 32x32 | added |
 | pc | `GW.EXE_0x35C9ECDD.dds` | `128x64:6b623cea` | 128x64 | added |
 | pc | `GW.EXE_0x36C424D1.dds` | `32x32:d5543d17` | 32x32 | added |
@@ -44,10 +47,12 @@ Priority order:
 | pc | `GW.EXE_0x3C8A4B42.dds` | `32x16:c0539a68` | 32x16 | added |
 | pc | `GW.EXE_0x3F251691.dds` | `128x128:44752841` | 128x128 | added |
 | pc | `GW.EXE_0x436D9C4B.dds` | `128x32:7e26badc` | 128x32 | added |
+| pc | `GW.EXE_0x436D9C4B.png` | `128x32:7e26badc` | 128x32 | overrode-existing-key |
 | pc | `GW.EXE_0x43FDAAC6.dds` | `256x16:d7f6a7b3` | 256x16 | added |
 | pc | `GW.EXE_0x460798DC.dds` | `32x32:fc34ba7e` | 32x32 | added |
 | pc | `GW.EXE_0x46E58B8E.dds` | `16x16:281cc551` | 16x16 | added |
 | pc | `GW.EXE_0x49E04D85.dds` | `128x64:4fdf49f5` | 128x64 | added |
+| pc | `GW.EXE_0x49E04D85.png` | `128x64:4fdf49f5` | 128x64 | overrode-existing-key |
 | pc | `GW.EXE_0x4A63BE04.dds` | `32x32:2bc3f9a1` | 32x32 | added |
 | pc | `GW.EXE_0x4C55E968.dds` | `64x64:ad271611` | 64x64 | added |
 | pc | `GW.EXE_0x4E5BEB6D.dds` | `256x256:e5759a46` | 256x256 | added |
@@ -62,6 +67,7 @@ Priority order:
 | pc | `GW.EXE_0x7385B9A3.dds` | `128x128:389b0eda` | 128x128 | added |
 | pc | `GW.EXE_0x745C6B29.dds` | `16x16:bca7ebec` | 16x16 | added |
 | pc | `GW.EXE_0x753F0FB5.dds` | `128x128:f22ec951` | 128x128 | added |
+| pc | `GW.EXE_0x753F0FB5.png` | `128x128:f22ec951` | 128x128 | overrode-existing-key |
 | pc | `GW.EXE_0x7784A6A9.dds` | `256x256:a9ea2016` | 256x256 | added |
 | pc | `GW.EXE_0x78BB6A2B.dds` | `64x64:a30dd3fc` | 64x64 | added |
 | pc | `GW.EXE_0x79A97ABA.dds` | `16x16:f665d569` | 16x16 | added |
@@ -81,18 +87,24 @@ Priority order:
 | pc | `GW.EXE_0x9F932B27.dds` | `32x32:36b40e64` | 32x32 | added |
 | pc | `GW.EXE_0xA01050C5.dds` | `512x32:1a461004` | 512x32 | added |
 | pc | `GW.EXE_0xA0629E7F.dds` | `128x128:a11c6460` | 128x128 | added |
+| pc | `GW.EXE_0xA0629E7F.png` | `128x128:a11c6460` | 128x128 | overrode-existing-key |
 | pc | `GW.EXE_0xA118FEFB.dds` | `256x256:e9f83fb1` | 256x256 | added |
+| pc | `GW.EXE_0xA118FEFB.png` | `256x256:e9f83fb1` | 256x256 | overrode-existing-key |
 | pc | `GW.EXE_0xA45D8891.dds` | `128x128:53fdbe95` | 128x128 | added |
 | pc | `GW.EXE_0xA4B1D07B.dds` | `64x16:97b41667` | 64x16 | added |
+| pc | `GW.EXE_0xA4B1D07B.png` | `64x16:97b41667` | 64x16 | overrode-existing-key |
 | pc | `GW.EXE_0xA64DBEF0.dds` | `16x16:f48b355a` | 16x16 | added |
 | pc | `GW.EXE_0xA696ECD4.dds` | `128x128:4b3b65d3` | 128x128 | added |
+| pc | `GW.EXE_0xA696ECD4.png` | `128x128:4b3b65d3` | 128x128 | overrode-existing-key |
 | pc | `GW.EXE_0xA8456DB9.dds` | `32x32:79412bf0` | 32x32 | added |
 | pc | `GW.EXE_0xA9BAFBFE.dds` | `64x64:5a37d5c5` | 64x64 | added |
 | pc | `GW.EXE_0xB1FBBDA8.dds` | `128x64:be10a094` | 128x64 | added |
+| pc | `GW.EXE_0xB1FBBDA8.png` | `128x64:be10a094` | 128x64 | overrode-existing-key |
 | pc | `GW.EXE_0xB2A969E9.dds` | `128x128:312be9a5` | 128x128 | added |
 | pc | `GW.EXE_0xB3B5E55E.dds` | `32x16:779d2162` | 32x16 | added |
 | pc | `GW.EXE_0xB78CD8DE.dds` | `32x32:6129844d` | 32x32 | added |
 | pc | `GW.EXE_0xB964346B.dds` | `256x256:1e2d5277` | 256x256 | added |
+| pc | `GW.EXE_0xB964346B.png` | `256x256:1e2d5277` | 256x256 | overrode-existing-key |
 | pc | `GW.EXE_0xC7C874B9.dds` | `256x16:fd7eeced` | 256x16 | added |
 | pc | `GW.EXE_0xCAED2F87.dds` | `32x32:da462282` | 32x32 | added |
 | pc | `GW.EXE_0xCB64CC8A.dds` | `32x16:ccf008b5` | 32x16 | added |

@@ -1,6 +1,6 @@
 # Minimalus Mobile
 
-Minimalus Mobile is the Android companion build for **Minimalus UI v3.0**, gkoogz / Jujin's slim Guild Wars interface mod. It packages the Guild Wars Reforged mobile web client in an Android WebView and applies the Minimalus texture replacement table at runtime.
+Minimalus Mobile is the Android companion build for **Minimalus UI v3.2**, gkoogz / Jujin's slim Guild Wars interface mod. It packages the Guild Wars Reforged mobile web client in an Android WebView and applies the Minimalus texture replacement table at runtime.
 
 The public APK is intended for easy sideloading: download it from the latest GitHub release on an Android device, allow the browser to install unknown apps when Android prompts you, and launch **Minimalus Mobile**.
 
@@ -8,14 +8,14 @@ The public APK is intended for easy sideloading: download it from the latest Git
 
 Download the current APK from the [latest MinimalusMobile release](https://github.com/gkoogz/MinimalusMobile/releases/latest).
 
-This first public build is a community beta. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
+The current public beta is **Minimalus Mobile 1.0.1**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
 
 ## What This Build Does
 
 - Serves the bundled Guild Wars Reforged web client from a stable local origin.
 - Proxies required patch and login traffic through the Android app so the WebView can complete the native mobile login flow.
 - Patches the downloaded game client script before execution.
-- Replaces matching runtime textures with Minimalus UI v3.0 textures.
+- Replaces matching runtime textures with Minimalus UI v3.2 textures.
 - Gives mobile-specific texture edits priority over the PC texture set.
 
 The replacement table is generated from the working Minimalus folders:

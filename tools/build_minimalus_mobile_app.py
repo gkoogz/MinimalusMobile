@@ -4,6 +4,8 @@ import os
 import re
 import shutil
 import subprocess
+import struct
+import zlib
 from pathlib import Path
 
 
@@ -21,6 +23,7 @@ CLIENT_JS = ROOT / "app" / "src" / "main" / "assets" / "public" / "astro" / "cli
 OUT_DIR = ROOT / "outputs"
 OUT_JSON = OUT_DIR / "minimalus_mobile_replacements_full.json"
 OUT_MD = OUT_DIR / "minimalus_mobile_replacements_full.md"
+OUT_SKIPPED = OUT_DIR / "minimalus_mobile_replacements_skipped.md"
 TMP = ROOT / "build" / "dds_to_tga_tmp"
 
 
@@ -86,6 +89,82 @@ def dds_to_rgba(dds: Path) -> tuple[int, int, bytes]:
     return read_tga_rgba(convert_to_tga(dds))
 
 
+def read_png_rgba(png: Path) -> tuple[int, int, bytes]:
+    data = png.read_bytes()
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError(f"Not a PNG: {png}")
+
+    pos = 8
+    width = height = color_type = bit_depth = None
+    compressed = bytearray()
+    while pos + 8 <= len(data):
+        length = struct.unpack(">I", data[pos:pos + 4])[0]
+        kind = data[pos + 4:pos + 8]
+        chunk = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if kind == b"IHDR":
+            width, height, bit_depth, color_type, compression, filter_method, interlace = struct.unpack(">IIBBBBB", chunk)
+            if bit_depth != 8 or color_type not in (2, 6) or compression != 0 or filter_method != 0 or interlace != 0:
+                raise ValueError(f"Unsupported PNG format for {png}")
+        elif kind == b"IDAT":
+            compressed.extend(chunk)
+        elif kind == b"IEND":
+            break
+
+    if width is None or height is None:
+        raise ValueError(f"PNG missing IHDR: {png}")
+
+    channels = 4 if color_type == 6 else 3
+    stride = width * channels
+    raw = zlib.decompress(bytes(compressed))
+    rows = []
+    src = 0
+    previous = bytearray(stride)
+    for _ in range(height):
+        filter_type = raw[src]
+        src += 1
+        row = bytearray(raw[src:src + stride])
+        src += stride
+        for i in range(stride):
+            left = row[i - channels] if i >= channels else 0
+            up = previous[i]
+            up_left = previous[i - channels] if i >= channels else 0
+            if filter_type == 1:
+                row[i] = (row[i] + left) & 0xFF
+            elif filter_type == 2:
+                row[i] = (row[i] + up) & 0xFF
+            elif filter_type == 3:
+                row[i] = (row[i] + ((left + up) // 2)) & 0xFF
+            elif filter_type == 4:
+                p = left + up - up_left
+                pa = abs(p - left)
+                pb = abs(p - up)
+                pc = abs(p - up_left)
+                predictor = left if pa <= pb and pa <= pc else up if pb <= pc else up_left
+                row[i] = (row[i] + predictor) & 0xFF
+            elif filter_type != 0:
+                raise ValueError(f"Unsupported PNG filter {filter_type} in {png}")
+        previous = row
+        rows.append(row)
+
+    rgba = bytearray(width * height * 4)
+    for y, row in enumerate(rows):
+        for x in range(width):
+            src_i = x * channels
+            dst_i = (y * width + x) * 4
+            rgba[dst_i] = row[src_i]
+            rgba[dst_i + 1] = row[src_i + 1]
+            rgba[dst_i + 2] = row[src_i + 2]
+            rgba[dst_i + 3] = row[src_i + 3] if channels == 4 else 255
+    return width, height, bytes(rgba)
+
+
+def image_to_rgba(path: Path) -> tuple[int, int, bytes]:
+    if path.suffix.lower() == ".png":
+        return read_png_rgba(path)
+    return dds_to_rgba(path)
+
+
 def fnv1a(data: bytes) -> str:
     value = 0x811C9DC5
     for byte in data:
@@ -116,13 +195,26 @@ def patch_client_js(replacements: dict) -> None:
     CLIENT_JS.write_text(patched, encoding="utf-8")
 
 
-def add_layer(replacements: dict, rows: list[dict], label: str, altered_dir: Path, unaltered_dir: Path) -> None:
-    for altered in sorted(altered_dir.glob("*.dds"), key=lambda p: p.name.lower()):
+def add_layer(replacements: dict, rows: list[dict], skipped: list[dict], label: str, altered_dir: Path, unaltered_dir: Path) -> None:
+    altered_files = [
+        p for p in altered_dir.iterdir()
+        if p.is_file() and p.suffix.lower() in (".dds", ".png")
+    ]
+    for altered in sorted(altered_files, key=lambda p: p.name.lower()):
+        if label == "pc" and altered.name.startswith("AndroidMobile_"):
+            continue
         unaltered = unaltered_dir / altered.name
+        if not unaltered.exists() and altered.suffix.lower() == ".png":
+            unaltered = unaltered_dir / (altered.stem + ".dds")
         if not unaltered.exists():
-            raise FileNotFoundError(f"Missing unaltered match for {altered}")
+            skipped.append({
+                "layer": label,
+                "file": altered.name,
+                "reason": "missing unaltered fingerprint source",
+            })
+            continue
         ow, oh, original_rgba = dds_to_rgba(unaltered)
-        aw, ah, altered_rgba = dds_to_rgba(altered)
+        aw, ah, altered_rgba = image_to_rgba(altered)
         if (ow, oh) != (aw, ah):
             raise ValueError(f"Dimension mismatch for {altered.name}: original {ow}x{oh}, altered {aw}x{ah}")
         if len(original_rgba) != len(altered_rgba):
@@ -157,8 +249,9 @@ def main() -> None:
 
     replacements: dict = {}
     rows: list[dict] = []
-    add_layer(replacements, rows, "pc", ALTERED, UNALTERED)
-    add_layer(replacements, rows, "mobile", ALTERED_MOBILE, UNALTERED_MOBILE)
+    skipped: list[dict] = []
+    add_layer(replacements, rows, skipped, "pc", ALTERED, UNALTERED)
+    add_layer(replacements, rows, skipped, "mobile", ALTERED_MOBILE, UNALTERED_MOBILE)
 
     OUT_JSON.write_text(json.dumps(replacements, indent=2), encoding="utf-8")
     patch_client_js(replacements)
@@ -167,8 +260,8 @@ def main() -> None:
         "# Minimalus Mobile Replacement Table",
         "",
         f"Total entries: {len(replacements)}",
-        f"PC altered DDS: {sum(1 for row in rows if row['layer'] == 'pc')}",
-        f"Mobile altered DDS: {sum(1 for row in rows if row['layer'] == 'mobile')}",
+        f"PC altered textures: {sum(1 for row in rows if row['layer'] == 'pc')}",
+        f"Mobile altered textures: {sum(1 for row in rows if row['layer'] == 'mobile')}",
         "",
         "Priority order:",
         "",
@@ -181,10 +274,23 @@ def main() -> None:
     for row in rows:
         lines.append(f"| {row['layer']} | `{row['file']}` | `{row['key']}` | {row['size']} | {row['status']} |")
     OUT_MD.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    skipped_lines = [
+        "# Minimalus Mobile Skipped Texture Inputs",
+        "",
+        "These altered files were present but could not be converted into runtime replacements.",
+        "",
+        "| Layer | Texture | Reason |",
+        "|---|---|---|",
+    ]
+    for row in skipped:
+        skipped_lines.append(f"| {row['layer']} | `{row['file']}` | {row['reason']} |")
+    OUT_SKIPPED.write_text("\n".join(skipped_lines) + "\n", encoding="utf-8")
     shutil.rmtree(TMP, ignore_errors=True)
-    print(f"entries={len(replacements)} pc={sum(1 for r in rows if r['layer']=='pc')} mobile={sum(1 for r in rows if r['layer']=='mobile')}")
+    print(f"entries={len(replacements)} pc={sum(1 for r in rows if r['layer']=='pc')} mobile={sum(1 for r in rows if r['layer']=='mobile')} skipped={len(skipped)}")
     print(f"wrote {OUT_JSON}")
     print(f"wrote {OUT_MD}")
+    print(f"wrote {OUT_SKIPPED}")
     print(f"patched {CLIENT_JS}")
 
 
