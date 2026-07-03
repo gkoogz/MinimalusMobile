@@ -10,6 +10,14 @@ Download the current APK from the [latest MinimalusMobile release](https://githu
 
 The current public beta is **Minimalus Mobile 1.0.2**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
 
+## Featured Images
+
+![Minimalus Mobile login screen](docs/images/featured_mobile_01.png)
+
+![Minimalus Mobile in-game UI](docs/images/featured_mobile_02.png)
+
+![Guild Wars Reforged mobile patch screen](docs/images/featured_mobile_03.png)
+
 ## What This Build Does
 
 - Serves the bundled Guild Wars Reforged web client from a stable local origin.
