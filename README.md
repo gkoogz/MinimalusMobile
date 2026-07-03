@@ -23,6 +23,8 @@ The replacement table is generated from the working Minimalus folders:
 1. `Altered` and `Unaltered` provide the PC/desktop baseline.
 2. `AlteredMobile` and `UnalteredMobile` are applied afterward and override matching entries.
 
+The repo also includes a snapshot of those source texture folders under `assets/` so the shipped APK can be audited and rebuilt from the same DDS inputs.
+
 ## Build From Source
 
 Requirements:
@@ -48,13 +50,13 @@ app\build\outputs\apk\debug\app-debug.apk
 
 ## Regenerate The Texture Table
 
-By default the tool reads the author's local Minimalus pipeline folder:
+By default the tool reads the author's local Minimalus pipeline folder when it exists:
 
 ```text
 C:\Users\Administrator\Documents\Minimalus UI 3.0 Pipeline\working\Minimalus UI 3.0
 ```
 
-To use another folder, set `MINIMALUS_PIPELINE_DIR` to a directory containing these four subfolders:
+To use another folder, set `MINIMALUS_PIPELINE_DIR` to a directory containing these four subfolders. A checked-in snapshot is available at `assets/`.
 
 - `Altered`
 - `Unaltered`
