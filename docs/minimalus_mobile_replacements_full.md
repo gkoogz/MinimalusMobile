@@ -1,8 +1,8 @@
 # Minimalus Mobile Replacement Table
 
-Total entries: 132
+Total entries: 135
 PC altered textures: 121
-Mobile altered textures: 10
+Mobile altered textures: 13
 
 Priority order:
 
@@ -135,12 +135,15 @@ Priority order:
 | pc | `Gw_T_0XF643F278.dds` | `256x256:5ac88573` | 256x256 | added |
 | mobile | `AndroidMobile_1024x64_1be51f09_tex4868_20260702_163326.dds` | `1024x64:8b9d5396` | 1024x64 | added |
 | mobile | `AndroidMobile_1024x64_e8901185_tex4865_20260702_163314.dds` | `1024x64:be8dfc79` | 1024x64 | added |
+| mobile | `AndroidMobile_128x128_65ba8542_tex5521_20260703_173400.dds` | `128x128:65ba8542` | 128x128 | added |
 | mobile | `AndroidMobile_128x128_d0ceb7ec_tex4871_20260702_163347.dds` | `128x128:d0ceb7ec` | 128x128 | added |
+| mobile | `AndroidMobile_128x32_ac0d9017_tex8128_20260703_173335.dds` | `128x32:ac0d9017` | 128x32 | added |
 | mobile | `AndroidMobile_256x32_33caf3e2_tex20196_20260702_172704.dds` | `256x32:33caf3e2` | 256x32 | added |
 | mobile | `AndroidMobile_256x64_0d3f79f1_tex4858_20260702_163258.dds` | `256x64:0d3f79f1` | 256x64 | added |
 | mobile | `AndroidMobile_256x64_109f328a_tex4863_20260702_163304.dds` | `256x64:109f328a` | 256x64 | added |
 | mobile | `AndroidMobile_32x32_96ed6dcb_tex4269_20260702_171738.dds` | `32x32:96ed6dcb` | 32x32 | added |
 | mobile | `AndroidMobile_512x128_817e169f_tex4857_20260702_163247.dds` | `512x128:3fdd7513` | 512x128 | added |
+| mobile | `AndroidMobile_512x256_a6372334_tex5522_20260703_173355.dds` | `512x256:26084752` | 512x256 | added |
 | mobile | `AndroidMobile_64x32_b7965cfb_tex4258_20260702_171713.dds` | `64x32:b7965cfb` | 64x32 | added |
 | mobile | `AndroidMobile_64x64_d2738fb9_tex20201_20260702_172631.dds` | `64x64:d2738fb9` | 64x64 | added |
 | mobile-alias | `GW.EXE_0x6EFCAC11.png -> AndroidMobile_128x64_7909d1f2_tex76149_20260703_163958.dds` | `128x64:7909d1f2` | 128x64 | added |
