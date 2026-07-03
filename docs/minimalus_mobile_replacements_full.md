@@ -1,6 +1,6 @@
 # Minimalus Mobile Replacement Table
 
-Total entries: 130
+Total entries: 131
 PC altered DDS: 121
 Mobile altered DDS: 10
 
@@ -8,10 +8,6 @@ Priority order:
 
 1. PC `Altered` textures
 2. Mobile `AlteredMobile` textures
-
-Mobile exclusions:
-
-- `0x7784A6A9`: Compass/mobile UI fill renders as an opaque black square on Android
 
 | Layer | Texture | Runtime key | Size | Status |
 |---|---|---:|---:|---|
@@ -66,7 +62,7 @@ Mobile exclusions:
 | pc | `GW.EXE_0x7385B9A3.dds` | `128x128:389b0eda` | 128x128 | added |
 | pc | `GW.EXE_0x745C6B29.dds` | `16x16:bca7ebec` | 16x16 | added |
 | pc | `GW.EXE_0x753F0FB5.dds` | `128x128:f22ec951` | 128x128 | added |
-| pc | `GW.EXE_0x7784A6A9.dds` | `` |  | excluded-mobile: Compass/mobile UI fill renders as an opaque black square on Android |
+| pc | `GW.EXE_0x7784A6A9.dds` | `256x256:a9ea2016` | 256x256 | added |
 | pc | `GW.EXE_0x78BB6A2B.dds` | `64x64:a30dd3fc` | 64x64 | added |
 | pc | `GW.EXE_0x79A97ABA.dds` | `16x16:f665d569` | 16x16 | added |
 | pc | `GW.EXE_0x7B74E5A4.dds` | `128x128:76053edf` | 128x128 | added |

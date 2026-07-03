@@ -23,12 +23,6 @@ OUT_JSON = OUT_DIR / "minimalus_mobile_replacements_full.json"
 OUT_MD = OUT_DIR / "minimalus_mobile_replacements_full.md"
 TMP = ROOT / "build" / "dds_to_tga_tmp"
 
-# The native Android renderer handles alpha differently for a small number of
-# legacy PC UI textures. Keep these in source assets, but do not inject them.
-MOBILE_EXCLUDED_TEXMOD_HASHES = {
-    "0x7784A6A9": "Compass/mobile UI fill renders as an opaque black square on Android",
-}
-
 
 def texture_id(name: str) -> str:
     match = re.search(r"0x([0-9a-fA-F]{8})", name, re.I)
@@ -124,18 +118,6 @@ def patch_client_js(replacements: dict) -> None:
 
 def add_layer(replacements: dict, rows: list[dict], label: str, altered_dir: Path, unaltered_dir: Path) -> None:
     for altered in sorted(altered_dir.glob("*.dds"), key=lambda p: p.name.lower()):
-        tex_id = texture_id(altered.name)
-        if tex_id in MOBILE_EXCLUDED_TEXMOD_HASHES:
-            rows.append({
-                "layer": label,
-                "file": altered.name,
-                "key": "",
-                "size": "",
-                "status": "excluded-mobile",
-                "previousSource": "",
-                "note": MOBILE_EXCLUDED_TEXMOD_HASHES[tex_id],
-            })
-            continue
         unaltered = unaltered_dir / altered.name
         if not unaltered.exists():
             raise FileNotFoundError(f"Missing unaltered match for {altered}")
@@ -193,18 +175,11 @@ def main() -> None:
         "1. PC `Altered` textures",
         "2. Mobile `AlteredMobile` textures",
         "",
-        "Mobile exclusions:",
-        "",
-        *[f"- `{key}`: {reason}" for key, reason in sorted(MOBILE_EXCLUDED_TEXMOD_HASHES.items())],
-        "",
         "| Layer | Texture | Runtime key | Size | Status |",
         "|---|---|---:|---:|---|",
     ]
     for row in rows:
-        status = row["status"]
-        if row.get("note"):
-            status += ": " + row["note"]
-        lines.append(f"| {row['layer']} | `{row['file']}` | `{row['key']}` | {row['size']} | {status} |")
+        lines.append(f"| {row['layer']} | `{row['file']}` | `{row['key']}` | {row['size']} | {row['status']} |")
     OUT_MD.write_text("\n".join(lines) + "\n", encoding="utf-8")
     shutil.rmtree(TMP, ignore_errors=True)
     print(f"entries={len(replacements)} pc={sum(1 for r in rows if r['layer']=='pc')} mobile={sum(1 for r in rows if r['layer']=='mobile')}")
