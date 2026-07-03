@@ -1,0 +1,1 @@
+﻿import{a as r}from"./client-main.js";const e="capacitor_persistent_account";class s extends r{async readAccount(){try{const t=localStorage.getItem(e);return{data:t?JSON.parse(t):null}}catch{return{data:null}}}async saveAccount(t){try{localStorage.setItem(e,JSON.stringify(t??null))}catch{}}async getPluginVersion(){return{version:"web"}}}export{s as CapacitorPersistentAccountWeb};
