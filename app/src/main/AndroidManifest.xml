@@ -7,7 +7,7 @@
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Minimalus Mobile v1"
+        android:label="GW Minimalus Beta"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
