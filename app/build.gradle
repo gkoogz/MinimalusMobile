@@ -10,7 +10,7 @@ android {
         applicationId "com.minimalus.mobile.v1"
         minSdk 24
         targetSdk 35
-        versionCode 103
-        versionName "1.0.3"
+        versionCode 104
+        versionName "1.0.4"
     }
 }

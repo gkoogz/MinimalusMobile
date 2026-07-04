@@ -8,7 +8,7 @@ The public APK is intended for easy sideloading: download it from the latest Git
 
 Download the current APK from the [latest MinimalusMobile release](https://github.com/gkoogz/MinimalusMobile/releases/latest).
 
-The current public beta is **Minimalus Mobile 1.0.3**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
+The current public beta is **Minimalus Mobile 1.0.4**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
 
 ## Featured Images
 
@@ -32,6 +32,21 @@ The replacement table is generated from the working Minimalus folders:
 2. `AlteredMobile` and `UnalteredMobile` are applied afterward and override matching entries.
 
 The repo also includes a snapshot of those source texture folders under `assets/` so the shipped APK can be audited and rebuilt from the same DDS inputs.
+
+## Android Compatibility
+
+Minimalus Mobile follows the retail Guild Wars Reforged Android floor: **Android 7.0/API 24 or newer**, with more than **3 GB RAM** recommended by the retail client guidance. The APK is built with `minSdk 24`, `targetSdk 35`, and a WebView-based runtime, so real-world compatibility also depends on the installed Android System WebView/Chrome provider and GPU WebGL support.
+
+Compatibility expectations:
+
+| Android version | Status |
+|---|---|
+| Android 7.x/API 24-25 | Minimum supported range; use an updated Android System WebView when possible. |
+| Android 8-11/API 26-30 | Supported target range for older phones and tablets with adequate RAM/GPU. |
+| Android 12/API 31-32 | Supported; retail Guild Wars Reforged recently fixed an Android 12 compatibility issue, so use current game assets. |
+| Android 13-15/API 33-35 | Primary modern support range. |
+
+The app logs an Android compatibility profile at startup, including SDK version, RAM, low-memory state, and WebView package on Android 8+. It also requests a larger heap for the WebView/WebGL process and disables unnecessary WebView features such as geolocation, form saving, and zoom controls to keep the runtime thin and predictable.
 
 ## Build From Source
 
