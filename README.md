@@ -8,7 +8,7 @@ The public APK is intended for easy sideloading: download it from the latest Git
 
 Download the current APK from the [latest MinimalusMobile release](https://github.com/gkoogz/MinimalusMobile/releases/latest).
 
-The current public beta is **Minimalus Mobile 1.0.4**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
+The current public beta is **Minimalus Mobile 1.0.5**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
 
 ## Featured Images
 
