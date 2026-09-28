@@ -8,7 +8,13 @@ The public APK is intended for easy sideloading: download it from the latest Git
 
 Download the current APK from the [latest MinimalusMobile release](https://github.com/gkoogz/MinimalusMobile/releases/latest).
 
-The current public beta is **Minimalus Mobile 1.0.5**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
+### 🚂 Steam has arrived — Minimalus Mobile 1.0.6!
+
+Sign in with your Steam Guild Wars account and take the slim Minimalus interface with you. **1.0.6** updates the bundled retail mobile client to **1.1.7**, adds Android Steam sign-in, and preserves all **135 Minimalus texture replacements**.
+
+Live Steam sign-in through to character selection/gameplay was confirmed on a **Samsung Galaxy S25 Ultra running Android 16**, with Minimalus texture injection active. Saved Steam sessions use Android Keystore encryption and are restored on startup. You can install this APK over 1.0.5 without uninstalling.
+
+See [Steam login maintenance](docs/steam-login.md) for the source, validation details, and checks for additional devices.
 
 ## Featured Images
 
@@ -25,6 +31,7 @@ The current public beta is **Minimalus Mobile 1.0.5**. It has reached the live g
 - Patches the downloaded game client script before execution.
 - Replaces matching runtime textures with Minimalus UI v3.2 textures.
 - Gives mobile-specific texture edits priority over the PC texture set.
+- Opens Steam sign-in in a separate screen and returns its token to the game. Cached Steam tokens are encrypted with Android Keystore and removed on game logout.
 
 The replacement table is generated from the working Minimalus folders:
 
@@ -45,6 +52,7 @@ Compatibility expectations:
 | Android 8-11/API 26-30 | Supported target range for older phones and tablets with adequate RAM/GPU. |
 | Android 12/API 31-32 | Supported; retail Guild Wars Reforged recently fixed an Android 12 compatibility issue, so use current game assets. |
 | Android 13-15/API 33-35 | Primary modern support range. |
+| Android 16/API 36 | Steam sign-in confirmed on Samsung Galaxy S25 Ultra. |
 
 The app logs an Android compatibility profile at startup, including SDK version, RAM, low-memory state, and WebView package on Android 8+. It also requests a larger heap for the WebView/WebGL process and disables unnecessary WebView features such as geolocation, form saving, and zoom controls to keep the runtime thin and predictable.
 

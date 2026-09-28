@@ -1,0 +1,11 @@
+{
+  "package": "net.arena.guildwars.reforged",
+  "version": "1.1.7",
+  "versionCode": 38735,
+  "apkSha256": "fc26945d9c355d9662683d5418c54f8ebd9249b58539102a703112df0d878df7",
+  "signerSha256": "1722268de1907f1dcd0669d72634d43d010608b1d7f92fe858fabc123dfaff6b",
+  "sourceClientSha256": "9b6f836388f63a1ba78ffe2fbadd0e41ba43d90323a6b443a52b30b47a04c77a",
+  "clientAssetCount": 56,
+  "steamClientId": "CE9BDCEC",
+  "steamRedirectUrl": "https://www.guildwars.com/app/live/auth"
+}
