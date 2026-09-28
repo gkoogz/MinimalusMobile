@@ -2,6 +2,7 @@ package com.minimalus.mobile.v1;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,9 +40,12 @@ public class MainActivity extends Activity {
     private static final String PATCH_PREFIX = "/gwpatch";
     private static final String ACCESS_KEY = "2043FE79-F32D-4FD7-8C27-0D47231C4F03";
     private static final long RETAIL_MIN_RAM_BYTES = 3L * 1024L * 1024L * 1024L;
-    private static final String TAG = "MinimalusV105";
+    private static final String TAG = "MinimalusV106";
+    private static final int STEAM_LOGIN_REQUEST = 106;
     private WebView webView;
-    private String bridgeUserAgent = "MinimalusMobile/1.0.5";
+    private String bridgeUserAgent = "MinimalusMobile/1.0.6";
+    private SteamAccountStore steamAccounts;
+    private String steamRequestId;
     private final Map<String, String> webgateCookies = new LinkedHashMap<>();
 
     @Override
@@ -49,7 +55,8 @@ public class MainActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        android.util.Log.i(TAG, "Starting Minimalus Mobile 1.0.5");
+        android.util.Log.i(TAG, "Starting Minimalus Mobile 1.0.6");
+        steamAccounts = new SteamAccountStore(this);
         WebView.setWebContentsDebuggingEnabled(false);
         logCompatibilityProfile();
         webView = new WebView(this);
@@ -78,6 +85,37 @@ public class MainActivity extends Activity {
         else super.onBackPressed();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != STEAM_LOGIN_REQUEST || steamRequestId == null) return;
+        String id = steamRequestId;
+        steamRequestId = null;
+        String token = data == null ? null : data.getStringExtra("token");
+        if (resultCode == RESULT_OK && token != null && !token.isEmpty()) {
+            deliverSteamResult(id, token, null, null);
+        } else {
+            String error = data == null ? null : data.getStringExtra("error");
+            deliverSteamResult(id, null, error == null ? "USER_CANCELLED" : "LOGIN_FAILED",
+                error == null ? "Steam sign-in cancelled." : error);
+        }
+    }
+
+    private void deliverSteamResult(String id, String token, String error, String message) {
+        if (webView == null || (!LOCAL_ORIGIN.equals(webView.getUrl())
+            && !(LOCAL_ORIGIN + "index.html").equals(webView.getUrl()))) return;
+        try {
+            JSONObject result = new JSONObject();
+            if (token != null) result.put("token", token);
+            if (error != null) result.put("error", error);
+            if (message != null) result.put("message", message);
+            webView.evaluateJavascript("window.__minimalusSteamResult("
+                + JSONObject.quote(id) + "," + result.toString() + ");", null);
+        } catch (Exception invalid) {
+            android.util.Log.e(TAG, "Could not deliver Steam sign-in result.");
+        }
+    }
+
     private void configureWebView(WebView view) {
         WebSettings settings = view.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -94,7 +132,7 @@ public class MainActivity extends Activity {
         settings.setAllowContentAccess(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        bridgeUserAgent = settings.getUserAgentString() + " MinimalusMobile/1.0.5";
+        bridgeUserAgent = settings.getUserAgentString() + " MinimalusMobile/1.0.6";
         settings.setUserAgentString(bridgeUserAgent);
 
         view.addJavascriptInterface(new MinimalusBridge(), "MinimalusNative");
@@ -170,6 +208,21 @@ public class MainActivity extends Activity {
 
     private class LocalAssetClient extends WebViewClient {
         @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            Uri uri = request.getUrl();
+            if ("https".equalsIgnoreCase(uri.getScheme()) && "minimalus.local".equalsIgnoreCase(uri.getHost())) return false;
+            // Account/help links must not replace the game or gain its native bridge.
+            if (request.isForMainFrame() && ("https".equalsIgnoreCase(uri.getScheme())
+                || "http".equalsIgnoreCase(uri.getScheme()))) {
+                try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
+                catch (android.content.ActivityNotFoundException unavailable) {
+                    android.util.Log.w(TAG, "No browser is available for this link.");
+                }
+            }
+            return true;
+        }
+
+        @Override
         public void onPageFinished(WebView view, String url) {
             android.util.Log.i(TAG, "Page finished: " + url);
             view.evaluateJavascript(webgateXhrShim(), null);
@@ -225,7 +278,7 @@ public class MainActivity extends Activity {
                 connection.setReadTimeout(60000);
                 connection.setRequestProperty("X-Access-Key", ACCESS_KEY);
                 connection.setRequestProperty("Accept-Encoding", "identity");
-                connection.setRequestProperty("User-Agent", "MinimalusMobile/1.0.5");
+                connection.setRequestProperty("User-Agent", "MinimalusMobile/1.0.6");
                 connection.connect();
 
                 int code = connection.getResponseCode();
@@ -250,6 +303,47 @@ public class MainActivity extends Activity {
     }
 
     private class MinimalusBridge {
+        @JavascriptInterface
+        public void startSteamLogin(String id, boolean silent) {
+            runOnUiThread(() -> {
+                if (steamRequestId != null) {
+                    deliverSteamResult(id, null, "LOGIN_IN_PROGRESS", "Steam sign-in is already in progress.");
+                    return;
+                }
+                String cached = steamAccounts.load();
+                if (cached != null) {
+                    deliverSteamResult(id, cached, null, null);
+                } else if (silent) {
+                    deliverSteamResult(id, null, "NO_CACHED_ACCOUNT", "No cached Steam account. Sign in with Steam first.");
+                } else {
+                    steamRequestId = id;
+                    startActivityForResult(new Intent(MainActivity.this, SteamLoginActivity.class), STEAM_LOGIN_REQUEST);
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public boolean storeSteamAccount(String token, String expirationDate) {
+            try {
+                steamAccounts.save(token, SteamOAuth.expirationMillis(expirationDate));
+                return true;
+            } catch (Exception invalid) {
+                android.util.Log.w(TAG, "Could not store Steam account.");
+                return false;
+            }
+        }
+
+        @JavascriptInterface
+        public void clearSteamAccount() {
+            steamAccounts.clear();
+            runOnUiThread(() -> {
+                if (steamRequestId != null) {
+                    steamRequestId = null;
+                    finishActivity(STEAM_LOGIN_REQUEST);
+                }
+            });
+        }
+
         @JavascriptInterface
         public String httpRequest(String method, String url, String headerLines, String body) {
             HttpURLConnection connection = null;

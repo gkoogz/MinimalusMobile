@@ -5,6 +5,9 @@ Use this before promoting a beta APK to stable.
 - Build a fresh APK from a clean checkout.
 - Install from a browser download, not only through `adb install`.
 - Confirm login reaches the live game world.
+- Check both an ArenaNet email account and a Steam account that owns Guild Wars Reforged.
+- Complete Steam Guard if prompted; cancel Steam sign-in and confirm the game remains available for a retry.
+- Restart after Steam sign-in and confirm the cached session works; log out and confirm another Steam account can be selected.
 - Confirm `logcat` shows the expected Minimalus replacement count.
 - Restart the app and confirm login/session behavior.
 - Reboot the Android device and launch again.

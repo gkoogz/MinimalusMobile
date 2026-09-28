@@ -10,6 +10,8 @@ Download the current APK from the [latest MinimalusMobile release](https://githu
 
 The current public beta is **Minimalus Mobile 1.0.5**. It has reached the live game world on the author's Android tablet with Minimalus injection active, but it has not yet had broad device, OS, reinstall, account, or game-update soak testing.
 
+This checkout prepares **1.0.6**, with the retail mobile client **1.1.7** and an Android Steam sign-in bridge. Steam login is implemented and the APK builds, but a complete Steam sign-in on an Android device still needs verification before promoting this build. See [Steam login maintenance](docs/steam-login.md) for the source, checks, and device checklist.
+
 ## Featured Images
 
 ![Minimalus Mobile login screen](docs/images/featured_mobile_01.png)
@@ -25,6 +27,7 @@ The current public beta is **Minimalus Mobile 1.0.5**. It has reached the live g
 - Patches the downloaded game client script before execution.
 - Replaces matching runtime textures with Minimalus UI v3.2 textures.
 - Gives mobile-specific texture edits priority over the PC texture set.
+- Opens Steam sign-in in a separate screen and returns its token to the game. Cached Steam tokens are encrypted with Android Keystore and removed on game logout.
 
 The replacement table is generated from the working Minimalus folders:
 

@@ -13,6 +13,10 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".SteamLoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize"
             android:exported="true"

@@ -10,7 +10,11 @@ android {
         applicationId "com.minimalus.mobile.v1"
         minSdk 24
         targetSdk 35
-        versionCode 105
-        versionName "1.0.5"
+        versionCode 106
+        versionName "1.0.6"
     }
+}
+
+dependencies {
+    testImplementation "junit:junit:4.13.2"
 }
