@@ -304,6 +304,12 @@ public class MainActivity extends Activity {
 
     private class MinimalusBridge {
         @JavascriptInterface
+        public String loadSteamAccount() {
+            JSONObject account = steamAccounts.loadAccountData();
+            return account == null ? null : account.toString();
+        }
+
+        @JavascriptInterface
         public void startSteamLogin(String id, boolean silent) {
             runOnUiThread(() -> {
                 if (steamRequestId != null) {

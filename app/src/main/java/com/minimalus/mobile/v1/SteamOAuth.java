@@ -74,6 +74,12 @@ final class SteamOAuth {
         }
     }
 
+    static String expirationIsoDate(long expiresAt) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT);
+        format.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return format.format(new java.util.Date(expiresAt));
+    }
+
     static long expirationMillis(String isoDate) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ROOT);
         format.setLenient(false);

@@ -20,7 +20,7 @@ The importer preserves the existing generated Minimalus texture prelude, updates
 
 `minimalus-steam.js` wraps the retail login interface and passes Steam requests to `MainActivity`. Interactive requests open `SteamLoginActivity`, whose WebView has no native JavaScript bridge. It accepts a token only from the exact retail HTTPS callback and checks a freshly generated 256-bit OAuth state. It rejects ambiguous parameters and invalid callbacks. Steam pages never replace the game WebView.
 
-`SteamAccountStore` encrypts tokens using AES-GCM and a device Android Keystore key. Cached sign-in respects expiration. Logout removes the cached credential and cancels an outstanding sign-in. Steam credentials are not stored in browser localStorage or written to logs. The live game engine still dispatches logout through its older `nativeAccount` interface; the game-script compatibility hook redirects that callback to `Module.login` so the Steam cache is cleared.
+`SteamAccountStore` encrypts tokens using AES-GCM and a device Android Keystore key. The native account reader supplies the retail `loadAccountData` contract on startup, including provider, token, and UTC expiration. Cached sign-in respects expiration. Logout removes the cached credential and cancels an outstanding sign-in. Steam credentials are not stored in browser localStorage or written to logs. The live game engine still dispatches logout through its older `nativeAccount` interface; the game-script compatibility hook redirects that callback to `Module.login` so the Steam cache is cleared.
 
 ## Checks
 
@@ -38,4 +38,8 @@ node tools\verify_live_runtime.cjs C:\path\to\Gw.js
 
 Local checks cover valid and invalid OAuth callbacks, login token shape, silent sign-in requests, cancellation and retries, logout, account switching, native storage errors, JavaScript syntax, and the shipped module graph. The complete 135-entry Minimalus texture prelude is preserved. The new APK uses versionCode 106 and the same local debug signing certificate as public 1.0.5, allowing an upgrade without uninstalling on devices with that release.
 
-No Android device was connected for this update. A complete live Steam sign-in, Steam Guard, reconnect, and rendering pass must still be checked on a device using [the release checklist](release-checklist.md). This is a candidate build; the previously verified public 1.0.5 remains the latest release until device checks are complete.
+## Live device validation — September 28, 2026
+
+The APK was installed as an upgrade over public 1.0.5 on a Samsung Galaxy S25 Ultra (Android 16/API 36, Android System WebView 153.0.8010.36). The live game downloaded its update and rendered the login scene. Runtime logs confirmed all 135 replacement definitions loaded and matching textures were replaced. The owner entered Steam credentials and confirmed reaching character selection/gameplay.
+
+The final build also restores encrypted Steam account data through the loader's startup reader. Seven Java tests and twelve JavaScript tests passed, including UTC expiration round trips, cached account restoration, invalid/expired cache fallback, and native storage after reconnect. Build, lint, module graph, and live engine compatibility checks passed. Broader device coverage and live cancellation, restart, logout/account switching, and game-update soak checks remain on [the release checklist](release-checklist.md).

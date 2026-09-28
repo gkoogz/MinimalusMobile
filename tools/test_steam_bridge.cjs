@@ -11,6 +11,7 @@ function setup(withNative = true) {
   const calls = [];
   const window = {};
   const native = {
+    loadSteamAccount() { return null; },
     startSteamLogin(id, silent) { requests.push({ id, silent }); },
     clearSteamAccount() { calls.push("clear-native"); },
     storeSteamAccount(token, expiration) { calls.push(["store-native", token, expiration]); return true; }
@@ -18,6 +19,7 @@ function setup(withNative = true) {
   if (withNative) window.MinimalusNative = native;
   vm.runInNewContext(source, { window });
   const retail = {
+    async loadAccountData() { calls.push("load-retail"); return null; },
     hasProvider(name) { return name === "Steam"; },
     async getAuthToken(name) { calls.push(["retail-login", name]); return { authCode: "retail-token" }; },
     async storeAccountData(token) { calls.push(["store-retail", token]); },
@@ -27,6 +29,24 @@ function setup(withNative = true) {
   function reply(result) { window.__minimalusSteamResult(requests.at(-1).id, result); }
   return { window, native, requests, calls, retail, login, reply };
 }
+
+test("startup restores the encrypted Steam account and keeps subsequent storage native", async () => {
+  const env = setup();
+  const account = { provider: "Steam", refreshToken: "fixture-cache", expirationDate: "2099-01-01T00:00:00.000Z" };
+  env.native.loadSteamAccount = () => JSON.stringify(account);
+  assert.deepEqual(JSON.parse(JSON.stringify(await env.login.loadAccountData())), account);
+  await env.login.storeAccountData("fixture-refreshed", new Date("2099-02-01T00:00:00.000Z"));
+  assert.deepEqual(env.calls, [["store-native", "fixture-refreshed", "2099-02-01T00:00:00.000Z"]]);
+});
+
+test("missing, malformed and expired Steam account data preserve the retail account reader", async () => {
+  const env = setup();
+  for (const saved of [null, "bad-json", JSON.stringify({ provider: "Steam", refreshToken: "expired", expirationDate: "2000-01-01T00:00:00.000Z" })]) {
+    env.native.loadSteamAccount = () => saved;
+    assert.equal(await env.login.loadAccountData(), null);
+  }
+  assert.deepEqual(env.calls, ["load-retail", "load-retail", "load-retail"]);
+});
 
 test("Steam native result supplies the game's refreshToken and keeps silent requests silent", async () => {
   const env = setup();

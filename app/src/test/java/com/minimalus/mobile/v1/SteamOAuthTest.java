@@ -71,6 +71,8 @@ public class SteamOAuthTest {
     @Test
     public void parsesJavascriptExpirationInUtcAndRejectsTrailingOrInvalidDates() {
         assertEquals(1790812800123L, SteamOAuth.expirationMillis("2026-10-01T00:00:00.123Z"));
+        assertEquals("2026-10-01T00:00:00.123Z", SteamOAuth.expirationIsoDate(1790812800123L));
+        assertEquals(1790812800123L, SteamOAuth.expirationMillis(SteamOAuth.expirationIsoDate(1790812800123L)));
         assertThrows(IllegalArgumentException.class, () -> SteamOAuth.expirationMillis("2026-02-30T00:00:00.000Z"));
         assertThrows(IllegalArgumentException.class, () -> SteamOAuth.expirationMillis("2026-10-01T00:00:00.000Zextra"));
     }

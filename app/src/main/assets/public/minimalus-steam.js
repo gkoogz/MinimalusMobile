@@ -39,6 +39,20 @@
       if (!native || !native.startSteamLogin) return login;
       let steamActive = false;
       const wrapped = Object.create(login);
+      wrapped.loadAccountData = async function () {
+        const saved = native.loadSteamAccount ? native.loadSteamAccount() : null;
+        if (saved) {
+          try {
+            const account = JSON.parse(saved);
+            if (account.provider === "Steam" && typeof account.refreshToken === "string"
+                && account.refreshToken && Date.parse(account.expirationDate) > Date.now()) {
+              steamActive = true;
+              return account;
+            }
+          } catch (invalid) { /* Fall back to the retail account reader. */ }
+        }
+        return login.loadAccountData();
+      };
       wrapped.getAuthToken = function (provider, options) {
         if (provider !== "Steam") {
           cancelPending();

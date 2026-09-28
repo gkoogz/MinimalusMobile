@@ -59,6 +59,11 @@ final class SteamAccountStore {
     }
 
     synchronized String load() {
+        JSONObject account = loadAccountData();
+        return account == null ? null : account.optString("refreshToken", null);
+    }
+
+    synchronized JSONObject loadAccountData() {
         String saved = preferences.getString("account", null);
         if (saved == null) return null;
         try {
@@ -69,7 +74,14 @@ final class SteamAccountStore {
             byte[] plain = cipher.doFinal(Base64.decode(envelope.getString("data"), Base64.NO_WRAP));
             JSONObject account = new JSONObject(new String(plain, "UTF-8"));
             String token = account.getString("token");
-            if (!token.isEmpty() && account.getLong("expiresAt") > System.currentTimeMillis()) return token;
+            long expiresAt = account.getLong("expiresAt");
+            if (!token.isEmpty() && expiresAt > System.currentTimeMillis()) {
+                JSONObject result = new JSONObject();
+                result.put("provider", "Steam");
+                result.put("refreshToken", token);
+                result.put("expirationDate", SteamOAuth.expirationIsoDate(expiresAt));
+                return result;
+            }
         } catch (Exception unreadable) {
             // A removed or invalidated device key requires a fresh interactive sign-in.
         }
